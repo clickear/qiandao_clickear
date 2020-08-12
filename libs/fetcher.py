@@ -11,7 +11,8 @@ import random
 import urllib
 import base64
 import logging
-import urlparse
+from urllib.parse import urlparse
+from urllib.parse import parse_qsl
 from datetime import datetime
 
 try:
@@ -47,6 +48,9 @@ class Fetcher(object):
         def _render(obj, key):
             if not obj.get(key):
                 return
+            # env.pop('md5')
+            # if(env.get)
+            # env['md5'] = None
             obj[key] = self.jinja_env.from_string(obj[key]).render(_cookies=_cookies, **env)
 
         _render(request, 'method')
@@ -128,7 +132,7 @@ class Fetcher(object):
             return result
 
         def build_request(request):
-            url = urlparse.urlparse(request.url)
+            url = urlparse(request.url)
             ret = dict(
                     method = request.method,
                     url = request.url,
@@ -136,10 +140,10 @@ class Fetcher(object):
                     headers = build_headers(request.headers),
                     queryString = [
                         {'name': n, 'value': v} for n, v in\
-                                urlparse.parse_qsl(url.query)],
+                                parse_qsl(url.query)],
                     cookies = [
                         {'name': n, 'value': v} for n, v in \
-                                urlparse.parse_qsl(request.headers.get('cookie', ''))],
+                                parse_qsl(request.headers.get('cookie', ''))],
                     headersSize = -1,
                     bodySize = len(request.body) if request.body else 0,
                     )
@@ -215,11 +219,12 @@ class Fetcher(object):
                 _from = _from[7:]
                 return response.headers.get(_from, '')
             elif _from == 'header':
-                return unicode(response.headers)
+                return (response.headers)
             else:
                 return ''
 
         for r in rule.get('success_asserts') or '':
+            print('正则匹配',r['re'], getdata(r['from']))
             if re.search(r['re'], getdata(r['from'])):
                 break
         else:
@@ -270,7 +275,7 @@ class Fetcher(object):
     @staticmethod
     def tpl2har(tpl):
         def build_request(en):
-            url = urlparse.urlparse(en['request']['url'])
+            url = urlparse(en['request']['url'])
             request = dict(
                     method = en['request']['method'],
                     url = en['request']['url'],
@@ -280,7 +285,7 @@ class Fetcher(object):
                                 en['request'].get('headers', [])],
                     queryString = [
                         {'name': n, 'value': v} for n, v in\
-                                urlparse.parse_qsl(url.query)],
+                                parse_qsl(url.query)],
                     cookies = [
                         {'name': x['name'], 'value': x['value'], 'checked': True} for x in\
                                 en['request'].get('cookies', [])],
@@ -369,7 +374,7 @@ class Fetcher(object):
                 raise
             response = e.response
 
-        env['session'].extract_cookies_to_jar(response.request, response)
+        # env['session'].extract_cookies_to_jar(response.request, response)
         success, msg = self.run_rule(response, rule, env)
 
         raise gen.Return({

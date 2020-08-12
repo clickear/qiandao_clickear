@@ -192,7 +192,7 @@ class MainWorker(object):
                 disabled = True
                 next = None
 
-            self.db.tasklog.add(task['id'], success=False, msg=unicode(e))
+            self.db.tasklog.add(task['id'], success=False, msg=str(e))
             self.db.task.mod(task['id'],
                     last_failed=time.time(),
                     failed_count=task['failed_count']+1,
@@ -220,7 +220,7 @@ class MainWorker(object):
                         disable=u"因连续多次失败，已停止。" if disabled else u"",
                         domain=config.domain,
                         taskid=task['id'],
-                        ), async=True)
+                        ), async_flag=True)
                 except Exception as e:
                     logging.error('send mail error: %r', e)
 

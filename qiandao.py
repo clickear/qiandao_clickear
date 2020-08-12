@@ -12,9 +12,12 @@ import functools
 from tornado.ioloop import IOLoop
 from libs.fetcher import Fetcher
 
+
 def usage():
-    print "%s tpl.har [--key=value] [env.json]" % sys.argv[0]
+    print
+    "%s tpl.har [--key=value] [env.json]" % sys.argv[0]
     sys.exit(1)
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
@@ -45,18 +48,21 @@ if __name__ == '__main__':
         except Exception as e:
             logging.error(e)
             usage()
-    if 'variables' not in env or not isinstance(env['variables'], dict)\
+    if 'variables' not in env or not isinstance(env['variables'], dict) \
             or 'session' not in env:
         env = {
-                'variables': env,
-                'session': [],
-                }
+            'variables': env,
+            'session': [],
+        }
     env['variables'].update(variables)
 
     # do fetch
     ioloop = IOLoop.instance()
+
+
     def ioloop_stop(x):
         ioloop.stop()
+
 
     fetcher = Fetcher()
     result = fetcher.do_fetch(tpl, env)
@@ -66,6 +72,6 @@ if __name__ == '__main__':
     try:
         result = result.result()
     except Exception as e:
-        print 'qiandao failed!', e
+        print('qiandao failed!', e)
     else:
-        print 'qiandao success!', result.get('variables', {}).get('__log__', '')
+        print('qiandao success!', result.get('variables', {}).get('__log__', ''))

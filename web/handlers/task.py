@@ -9,7 +9,7 @@ import json
 import time
 from tornado import gen
 
-from base import *
+from .base import *
 
 class TaskNewHandler(BaseHandler):
     def get(self):
@@ -46,7 +46,7 @@ class TaskNewHandler(BaseHandler):
         tpl = self.check_permission(self.db.tpl.get(tplid, fields=('id', 'userid', 'interval')))
 
         env = {}
-        for key, value in self.request.body_arguments.iteritems():
+        for key, value in self.request.body_arguments.items():
             if key.startswith('_binux_'):
                 continue
             if not value:
