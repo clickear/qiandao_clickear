@@ -166,7 +166,7 @@ class Fetcher(object):
 
         def build_response(response):
             cookies = cookie_utils.CookieSession()
-            cookies.extract_cookies_to_jar(response.request, response)
+            # cookies.extract_cookies_to_jar(response.request, response)
 
             encoding = utils.find_encoding(response.body, response.headers)
             if not response.headers.get('content-type'):

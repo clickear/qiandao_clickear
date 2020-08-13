@@ -53,14 +53,14 @@ class HARTest(BaseHandler):
 
         result = {
                 'success': ret['success'],
-                'har': self.fetcher.response2har(ret['response']),
+                'har': str(self.fetcher.response2har(ret['response'])),
                 'env': {
                     'variables': ret['env']['variables'],
                     'session': ret['env']['session'].to_json(),
                     }
                 }
 
-        self.finish(result)
+        self.finish()
 
 class HARSave(BaseHandler):
     @staticmethod
